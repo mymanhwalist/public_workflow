@@ -1,0 +1,17 @@
+{
+  "name": "remote100k-scraper",
+  "version": "1.0.0",
+  "description": "Scrapes remote100k.com companies, jobs and career page URLs",
+  "main": "scrape.js",
+  "type": "module",
+  "scripts": {
+    "scrape": "node scrape.js",
+    "scrape:dry": "node scrape.js --dry-run",
+    "scrape:limit": "node scrape.js --limit=10"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "cheerio": "^1.0.0",
+    "playwright": "^1.58.2"
+  }
+}

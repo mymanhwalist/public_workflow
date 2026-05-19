@@ -1,0 +1,14 @@
+{
+  "name": "job-scraper-dashboard",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Web dashboard for the job scraping pipeline",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "@supabase/supabase-js": "^2.49.1"
+  }
+}

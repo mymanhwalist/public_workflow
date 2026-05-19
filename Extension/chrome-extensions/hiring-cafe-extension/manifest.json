@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "Hiring.cafe Scraper",
+  "version": "2.0.0",
+  "description": "Extract job data from hiring.cafe with auto-scroll and batch extraction",
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "downloads"
+  ],
+
+  "host_permissions": [
+    "https://hiring.cafe/*",
+    "https://*.supabase.co/*"
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+
+  "options_page": "options.html",
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://hiring.cafe/*"],
+      "js": ["contentExtractor.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

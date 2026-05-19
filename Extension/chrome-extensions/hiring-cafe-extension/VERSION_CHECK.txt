@@ -1,0 +1,6 @@
+VERSION: 2.0.0-CAREER-PAGE-DETECTION
+UPDATED: 2026-01-10 18:35:00
+FEATURE: Career page API detection in FOREGROUND
+
+This file confirms the extension files have been updated.
+If you don't see this version in console, the extension didn't reload properly.

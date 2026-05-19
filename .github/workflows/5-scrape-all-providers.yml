@@ -1,0 +1,81 @@
+name: 5 — Scrape No-Date Providers (Baseline)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Scrapes ONLY endpoints that don't return reliable posting dates:
+# Custom, Breezy HR, SmartRecruiters, Jobvite, BrassRing, null/unknown (~4,639)
+#
+# Workflow 1 handles reliable-date providers (Greenhouse, Lever, Ashby, etc.)
+# This workflow builds a job ID baseline for everything else so future runs
+# can detect truly new postings by ID delta.
+#
+# Status rules (set in scraper.js upsertRawJob):
+#   - First scrape, any job        → skipped_first_scrape (baseline)
+#   - New job ID + has posted_date → pending (refiner will process)
+#   - New job ID + no posted_date  → skipped_no_date (ID collected, not refined)
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    - cron: '30 1 * * *'
+    - cron: '30 3 * * *'
+    - cron: '30 5 * * *'
+    - cron: '30 7 * * *'
+    - cron: '30 9 * * *'
+    - cron: '30 11 * * *'
+    - cron: '30 13 * * *'
+    - cron: '30 15 * * *'
+    - cron: '30 17 * * *'
+    - cron: '30 19 * * *'
+    - cron: '30 21 * * *'
+    - cron: '30 23 * * *'
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Max endpoints to scrape this run (default: 1000)'
+        required: false
+        default: '1000'
+      dry_run:
+        description: 'Dry run — print only, no DB writes'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  scrape:
+    name: Scrape all providers → DB2 raw_jobs (baseline)
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: apifromurl/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apifromurl
+        run: npm ci
+
+      - name: Run scraper (no-date providers only)
+        working-directory: apifromurl
+        env:
+          DB2_URL: ${{ secrets.DB2_URL }}
+          DB2_KEY: ${{ secrets.DB2_KEY }}
+        run: |
+          LIMIT="${{ github.event.inputs.limit }}"
+          if [ -z "$LIMIT" ]; then LIMIT="1000"; fi
+          ARGS="--limit=$LIMIT --max-pending-per-company=3 --no-date-providers"
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          echo "Running: node scraper.js $ARGS"
+          node scraper.js $ARGS
+
+      - name: Summary
+        if: always()
+        run: echo "✅ No-date providers scrape finished at $(date -u)"

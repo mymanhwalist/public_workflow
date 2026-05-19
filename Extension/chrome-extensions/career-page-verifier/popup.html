@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { width: 400px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; color: #e0e0e0; background: #1a1a2e; }
+    .container { padding: 16px; }
+    h1 { font-size: 16px; color: #fff; margin-bottom: 12px; }
+    h2 { font-size: 13px; color: #aaa; margin-bottom: 8px; }
+
+    .config-section { margin-bottom: 16px; }
+    .config-section label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }
+    .config-section input {
+      width: 100%; padding: 6px 8px; background: #16213e; border: 1px solid #333; border-radius: 4px;
+      color: #e0e0e0; font-size: 12px; margin-bottom: 8px;
+    }
+
+    .btn {
+      padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer;
+      font-size: 12px; font-weight: 600; transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary { background: #4361ee; color: #fff; }
+    .btn-success { background: #2ecc71; color: #fff; }
+    .btn-secondary { background: #444; color: #ddd; }
+
+    .btn-row { display: flex; gap: 8px; margin-bottom: 12px; }
+
+    .progress-bar-container {
+      width: 100%; height: 8px; background: #16213e; border-radius: 4px;
+      margin-bottom: 8px; overflow: hidden; display: none;
+    }
+    .progress-bar {
+      height: 100%; background: #4361ee; border-radius: 4px; transition: width 0.3s;
+    }
+
+    .stats { font-size: 12px; color: #888; margin-bottom: 12px; display: none; }
+    .stats span { color: #4361ee; font-weight: 600; }
+
+    .current-company {
+      background: #16213e; border-radius: 6px; padding: 12px; margin-bottom: 12px; display: none;
+    }
+    .current-company .name { font-size: 14px; font-weight: 600; color: #fff; }
+    .current-company .website { font-size: 11px; color: #4361ee; margin-top: 4px; word-break: break-all; }
+    .current-company .status { font-size: 11px; color: #888; margin-top: 6px; }
+
+    .log-panel {
+      background: #0f0f23; border-radius: 6px; padding: 10px; max-height: 200px;
+      overflow-y: auto; font-family: 'SF Mono', monospace; font-size: 11px;
+      line-height: 1.6; display: none;
+    }
+    .log-panel .log-entry { color: #666; }
+    .log-panel .log-entry.success { color: #2ecc71; }
+    .log-panel .log-entry.error { color: #e74c3c; }
+    .log-panel .log-entry.info { color: #4361ee; }
+    .log-panel .log-entry.skip { color: #f39c12; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Career Page Verifier</h1>
+
+    <div class="config-section">
+      <label>Supabase URL</label>
+      <input type="text" id="supabaseUrl" placeholder="https://xxxxx.supabase.co">
+      <label>Supabase Anon Key</label>
+      <input type="text" id="supabaseKey" placeholder="eyJhbGciOi...">
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="saveConfig">Save Config</button>
+        <button class="btn btn-secondary" id="testConnection">Test Connection</button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="fetchCompanies" disabled>Fetch Companies</button>
+      <button class="btn btn-primary" id="fetchExisting" disabled style="background:#e67e22;">Verify Existing</button>
+      <button class="btn btn-success" id="startReview" disabled>Start</button>
+      <button class="btn btn-secondary" id="stopReview" disabled>Stop</button>
+      <button class="btn btn-secondary" id="verifyData" disabled>Verify</button>
+    </div>
+
+    <div class="stats" id="stats">
+      <span id="remaining">0</span> remaining &middot;
+      <span id="saved">0</span> saved &middot;
+      <span id="skipped">0</span> skipped
+    </div>
+
+    <div class="progress-bar-container" id="progressContainer">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="current-company" id="currentCompany">
+      <div class="name" id="companyName">—</div>
+      <div class="website" id="companyWebsite">—</div>
+      <div class="status" id="companyStatus">Waiting…</div>
+      <div class="popup-actions" id="popupActions" style="display:none; margin-top: 10px; border-top: 1px solid #333; padding-top: 10px;">
+        <label style="font-size:11px; color:#888; margin-bottom:4px; display:block;">Save URL (paste or type)</label>
+        <input type="text" id="popupUrlInput" placeholder="https://company.com/careers" style="width:100%; padding:6px 8px; background:#0f0f23; border:1px solid #333; border-radius:4px; color:#e0e0e0; font-size:12px; margin-bottom:8px; font-family:'SF Mono',monospace;">
+        <div class="btn-row" style="margin-bottom:0;">
+          <button class="btn btn-success" id="popupSave" style="flex:1;">Save URL</button>
+          <button class="btn btn-secondary" id="popupSkip" style="flex:1;">Skip</button>
+          <button class="btn" id="popupNoCareers" style="flex:1; background:#e67e22; color:#fff;">No Careers</button>
+        </div>
+      </div>
+    </div>
+
+    <h2>Log</h2>
+    <div class="log-panel" id="logPanel"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

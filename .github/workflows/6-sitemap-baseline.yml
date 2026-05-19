@@ -1,0 +1,86 @@
+name: 6 — Sitemap Baseline Collector
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Scrapes sitemap-only configs (Custom, BrassRing, iCIMS, SuccessFactors,
+# null/unknown ATS) — companies with no public JSON API.
+#
+# These are tracked via sitemap URL deltas instead of API + posting date:
+#   - First scrape → saves ALL job URLs as skipped_first_scrape (baseline)
+#   - Subsequent runs → new URLs not seen before → pending (refiner processes)
+#   - Already seen URLs → last_seen_at updated only
+#
+# Runs 4× daily (every 6h). 4,181 configs at ~1,000/run → full baseline in 1 day.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    - cron: '0 1 * * *'
+    - cron: '0 7 * * *'
+    - cron: '0 13 * * *'
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Max configs to process this run (default: 1000)'
+        required: false
+        default: '1000'
+      provider:
+        description: 'Only this ats_provider (e.g. Custom, BrassRing)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Dry run — print only, no DB writes'
+        required: false
+        default: 'false'
+        type: boolean
+      force:
+        description: 'Force re-scrape (ignore 24h cooldown)'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  baseline:
+    name: Collect sitemap job URLs → DB2 raw_jobs
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: apifromurl/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apifromurl
+        run: npm ci
+
+      - name: Run sitemap baseline collector
+        working-directory: apifromurl
+        env:
+          DB2_URL: ${{ secrets.DB2_URL }}
+          DB2_KEY: ${{ secrets.DB2_KEY }}
+        run: |
+          LIMIT="${{ github.event.inputs.limit }}"
+          if [ -z "$LIMIT" ]; then LIMIT="1000"; fi
+          ARGS="--limit=$LIMIT"
+          if [ -n "${{ github.event.inputs.provider }}" ]; then
+            ARGS="$ARGS --provider=${{ github.event.inputs.provider }}"
+          fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          echo "Running: node sitemap-baseline.js $ARGS"
+          node sitemap-baseline.js $ARGS
+
+      - name: Summary
+        if: always()
+        run: echo "✅ Sitemap baseline run finished at $(date -u)"

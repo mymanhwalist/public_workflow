@@ -1,0 +1,13 @@
+{
+  "name": "sitemap-scraper",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "scrape": "node scraper.js",
+    "scrape:dry": "node scraper.js --dry-run --verbose",
+    "scrape:limit": "node scraper.js --limit=5 --verbose"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1"
+  }
+}

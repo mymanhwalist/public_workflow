@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "remote100k Scraper",
+  "version": "1.0",
+  "description": "Scrapes company application URLs from remote100k.com and saves to Supabase",
+  "permissions": ["activeTab", "storage", "tabs", "scripting"],
+  "host_permissions": [
+    "https://remote100k.com/*",
+    "https://vmdbwpqopujirdcthgta.supabase.co/*",
+    "https://framerusercontent.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "remote100k Scraper"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://remote100k.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

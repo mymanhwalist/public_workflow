@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Career Page Detection</title>
+</head>
+<body>
+  <h1>Test Job Page</h1>
+
+  <!-- Test Case 1: Link with "View All Jobs" text -->
+  <a href="https://jobs.smartrecruiters.com/TestCompany" class="back-link">
+    View All Jobs
+  </a>
+
+  <!-- Test Case 2: Link with career keyword in URL -->
+  <nav>
+    <a href="https://careers.testcompany.com/jobs">Jobs</a>
+  </nav>
+
+  <!-- Test Case 3: Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="https://boards.greenhouse.io/testcompany">All Positions</a>
+    <span> > </span>
+    <span>Software Engineer</span>
+  </div>
+
+  <script src="contentExtractor.js"></script>
+  <script>
+    // Test the function
+    const extractor = new HiringCafeJobExtractor();
+    const careerPageUrl = extractor.extractCareerPageUrl();
+
+    console.log('========================================');
+    console.log('TEST RESULTS:');
+    console.log('Career Page URL:', careerPageUrl);
+    console.log('Expected: https://jobs.smartrecruiters.com/TestCompany');
+    console.log('Match:', careerPageUrl === 'https://jobs.smartrecruiters.com/TestCompany' ? '✅ PASS' : '❌ FAIL');
+    console.log('========================================');
+
+    alert('Career Page URL: ' + careerPageUrl);
+  </script>
+</body>
+</html>

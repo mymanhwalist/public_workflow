@@ -1,0 +1,78 @@
+name: 4 — Generate Markdown Job Files
+
+on:
+  schedule:
+    # Runs 30 min after the publish workflow (which runs at 1,6,11,16,21 UTC)
+    - cron: '30 1 * * *'
+    - cron: '30 6 * * *'
+    - cron: '30 11 * * *'
+    - cron: '30 16 * * *'
+    - cron: '30 21 * * *'
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'How many days of jobs to include (leave blank = all jobs ever refined)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Dry run — print counts, no files written'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  generate:
+    name: Generate markdown → push to jobsearchus/jobsearchus
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout workflow repo
+        uses: actions/checkout@v4
+
+      - name: Checkout jobsearchus/jobsearchus repo
+        uses: actions/checkout@v4
+        with:
+          repository: jobsearchus/jobsearchus
+          token: ${{ secrets.GH_PAT }}
+          path: jobsearchus-repo
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: apifromurl/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apifromurl
+        run: npm ci
+
+      - name: Generate markdown files
+        working-directory: apifromurl
+        env:
+          MAIN_DB_URL: ${{ secrets.MAIN_DB_URL }}
+          MAIN_DB_KEY: ${{ secrets.MAIN_DB_KEY }}
+        run: |
+          DAYS="${{ github.event.inputs.days }}"
+          ARGS="--output-dir=../jobsearchus-repo"
+          if [ -n "$DAYS" ]; then ARGS="$ARGS --days=$DAYS"; fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          node markdown-generator.js $ARGS
+
+      - name: Commit and push changes
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        working-directory: jobsearchus-repo
+        run: |
+          git config user.name "jobsearchus-bot"
+          git config user.email "bot@jobsearchus.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "latest jobs updated"
+            git push
+            echo "Pushed updated job listings."
+          fi

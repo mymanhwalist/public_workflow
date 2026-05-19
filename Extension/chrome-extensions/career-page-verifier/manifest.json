@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Career Page Verifier",
+  "version": "1.0",
+  "description": "Manually verify and save career page URLs for companies missing from career_pages table",
+  "permissions": ["activeTab", "tabs", "storage", "scripting", "webNavigation"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Career Page Verifier"
+  }
+}

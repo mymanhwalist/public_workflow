@@ -1,0 +1,44 @@
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Node / npm ────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+# package-lock.json is committed so GitHub Actions npm ci works
+
+# ── Environment / secrets ─────────────────────────────────────────────────────
+# Never commit API keys or Supabase credentials
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# ── Next.js (jobsearchus/) ────────────────────────────────────────────────────
+jobsearchus/.next/
+jobsearchus/out/
+jobsearchus/build/
+jobsearchus/*.tsbuildinfo
+jobsearchus/next-env.d.ts
+jobsearchus/.vercel/
+
+# ── Scraper output / one-off data files ───────────────────────────────────────
+apifromurl/sitemap-results-*.json
+apifromurl/sitemap-test-*.json
+apifromurl/job-details-*.json
+apifromurl/scheduler.log
+
+# ── Legacy / one-time scripts (keep in repo but mark clearly) ─────────────────
+# apifromurl/migrate-to-db2.js  ← keep for reference
+# apifromurl/seed-skills.js     ← keep for reference
+
+# ── Misc ─────────────────────────────────────────────────────────────────────
+*.pem
+*.tsbuildinfo
+.yarn/
+.pnp.*
+coverage/

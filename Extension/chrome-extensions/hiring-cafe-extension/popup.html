@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 400px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 16px;
+      background: #f9fafb;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 20px;
+      color: #1f2937;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .section {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .section h2 {
+      font-size: 14px;
+      color: #374151;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .input-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status {
+      padding: 8px 12px;
+      background: #eff6ff;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #1e40af;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #3b82f6;
+      transition: width 0.3s;
+      width: 0%;
+    }
+
+    .progress-text {
+      font-size: 11px;
+      color: #6b7280;
+      text-align: center;
+    }
+
+    .log {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: 8px;
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 10px;
+      font-family: 'Courier New', monospace;
+      margin-top: 8px;
+    }
+
+    .log-entry {
+      padding: 2px 0;
+      border-left: 2px solid #d1d5db;
+      padding-left: 6px;
+      margin-bottom: 4px;
+    }
+
+    .log-success {
+      border-left-color: #10b981;
+      color: #059669;
+    }
+
+    .log-error {
+      border-left-color: #ef4444;
+      color: #dc2626;
+    }
+
+    .log-info {
+      border-left-color: #3b82f6;
+      color: #2563eb;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .info-box {
+      background: #dbeafe;
+      border-left: 3px solid #3b82f6;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #1e40af;
+      margin-bottom: 12px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-row button {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h1>Hiring.cafe Scraper</h1>
+        <div class="subtitle">Extract job data easily</div>
+      </div>
+      <button id="settingsBtn" style="background: none; border: none; cursor: pointer; font-size: 20px; padding: 8px;" title="Settings">⚙️</button>
+    </div>
+  </div>
+
+  <div id="status" class="status">Ready</div>
+
+  <!-- Step 1: Collect URLs -->
+  <div class="section">
+    <h2>Step 1: Collect Job URLs</h2>
+    <div class="input-group">
+      <label>Max Scrolls:</label>
+      <input type="number" id="maxScrolls" value="10" min="1" max="100">
+    </div>
+    <button id="scrollBtn" class="btn-primary">Start Scrolling</button>
+    <div id="urlCount" class="hidden info-box">
+      Found <strong id="urlCountNum">0</strong> job URLs
+    </div>
+  </div>
+
+  <!-- Step 2: Extract Jobs -->
+  <div class="section">
+    <h2>Step 2: Extract Job Data</h2>
+    <div class="input-group">
+      <label>Number of Companies (0 = all):</label>
+      <input type="number" id="companyLimit" value="0" min="0">
+    </div>
+    <div class="input-group">
+      <label>Jobs per Company (0 = all):</label>
+      <input type="number" id="jobsPerCompany" value="0" min="0">
+    </div>
+    <div class="input-group">
+      <label>Total Jobs Limit (0 = no limit):</label>
+      <input type="number" id="jobLimit" value="0" min="0">
+    </div>
+    <button id="extractBtn" class="btn-success" disabled>Start Extraction</button>
+
+    <div id="extractionProgress" class="hidden">
+      <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+      <div class="progress-text">
+        <span id="progressCurrent">0</span> / <span id="progressTotal">0</span>
+        (<span id="progressPercent">0</span>%)
+      </div>
+    </div>
+
+    <div id="extractionLog" class="hidden log">
+      <!-- Log entries go here -->
+    </div>
+  </div>
+
+  <!-- Step 3: Save Data -->
+  <div class="section">
+    <h2>Step 3: Save Data</h2>
+    <div id="jobInfo" class="hidden info-box">
+      <strong id="jobCount">0</strong> jobs extracted
+    </div>
+    <div id="supabaseStatus" class="hidden" style="padding: 8px 12px; background: #fee2e2; border-left: 3px solid #ef4444; border-radius: 4px; font-size: 12px; color: #991b1b; margin-bottom: 12px;">
+      ⚠️ Supabase not configured (click ⚙️)
+    </div>
+    <div class="btn-row">
+      <button id="uploadBtn" class="btn-success" disabled>Upload to Supabase</button>
+      <button id="downloadBtn" class="btn-primary" disabled>Download JSON</button>
+    </div>
+    <button id="clearBtn" class="btn-secondary" disabled style="width: 100%; margin-top: 8px;">Clear Data</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

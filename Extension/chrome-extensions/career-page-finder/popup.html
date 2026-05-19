@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 450px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .section {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      opacity: 0.95;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 8px;
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: #667eea;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.8);
+      color: #fff;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #fff;
+      transition: width 0.3s ease;
+    }
+
+    .log {
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 12px;
+      font-family: 'Monaco', monospace;
+    }
+
+    .log-entry {
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+
+    .log-info { color: #93c5fd; }
+    .log-success { color: #86efac; }
+    .log-error { color: #fca5a5; }
+
+    .status {
+      text-align: center;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .status-ready {
+      background: rgba(134, 239, 172, 0.2);
+      color: #86efac;
+    }
+
+    .status-running {
+      background: rgba(147, 197, 253, 0.2);
+      color: #93c5fd;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .instructions {
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .instructions-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      opacity: 0.95;
+    }
+
+    .instructions-text {
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📍 Career Page Finder</h1>
+    <p class="subtitle">Simple career page URL collection</p>
+
+    <!-- Configuration Section -->
+    <div id="config-section" class="section">
+      <div class="section-title">Supabase Configuration</div>
+      <input type="text" id="supabase-url" placeholder="Supabase URL (https://xxx.supabase.co)" />
+      <input type="password" id="supabase-key" placeholder="Service Role Key" />
+      <button class="btn-primary" id="save-config">Save Configuration</button>
+      <button class="btn-secondary" id="test-connection">Test Connection</button>
+    </div>
+
+    <!-- Stats Section -->
+    <div id="stats-section" class="section hidden">
+      <div class="section-title">📋 Career Page Collection</div>
+      <div class="stats">
+        <div class="stat-box">
+          <div class="stat-value" id="total-pages">0</div>
+          <div class="stat-label">Total Pages</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="saved-pages">0</div>
+          <div class="stat-label">Saved</div>
+        </div>
+      </div>
+      <button class="btn-primary" id="fetch-pages">Fetch Companies</button>
+      <button class="btn-secondary" id="start-collection" disabled>Start Collection</button>
+      <button class="btn-danger hidden" id="stop-collection">Stop Collection</button>
+
+      <!-- Instructions -->
+      <div class="instructions">
+        <div class="instructions-title">How it works:</div>
+        <div class="instructions-text">
+          1. Click "Start Collection"<br>
+          2. Navigate to the career page<br>
+          3. Click "Save This Career Page"<br>
+          4. Repeat for next company
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Section -->
+    <div id="progress-section" class="section hidden">
+      <div class="section-title">Progress</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+      </div>
+      <div class="status status-ready" id="status">Ready to start</div>
+    </div>
+
+    <!-- Log Section -->
+    <div id="log-section" class="section hidden">
+      <div class="section-title">Collection Log</div>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
