@@ -15,7 +15,7 @@ async function main() {
     .select('id, title, category, posted_date, companies(name)')
     .eq('is_published', false)
     .not('category', 'is', null)
-    .order('posted_date', { ascending: true, nullsFirst: false })
+    .order('posted_date', { ascending: false, nullsFirst: false })
     .limit(500);
 
   if (error) { console.error('Fetch failed:', error.message); process.exit(1); }
